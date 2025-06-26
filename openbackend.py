@@ -1,27 +1,27 @@
 from fastapi import FastAPI, WebSocket
 import openai
 import os
+import asyncio
 
 app = FastAPI()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
 
 @app.websocket("/ws/tts")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:
         while True:
-            data = await websocket.receive_text()
-            print(f"Received text: {data}")
+            text = await websocket.receive_text()
 
-            with openai.audio.speech.with_streaming_response.create(
+            async with openai.AsyncOpenAI().audio.speech.with_streaming_response.create(
                 model="gpt-4o-mini-tts",
                 voice="coral",
-                input=data,
+                input=text,
                 response_format="pcm",
             ) as response:
-                for chunk in response.iter_bytes():
+
+                async for chunk in response.iter_bytes():
                     await websocket.send_bytes(chunk)
 
     except Exception as e:
