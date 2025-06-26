@@ -1,4 +1,4 @@
 fastapi
 openai
-websockets
 uvicorn[standard]
+websockets
