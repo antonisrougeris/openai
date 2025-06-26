@@ -16,8 +16,8 @@ async def websocket_endpoint(websocket: WebSocket):
                 model="gpt-4o-mini-tts",
                 voice="coral",
                 input=data,
-    response_format="mp3",  # αντί για pcm
-            ) as response:
+        response_format="pcm",
+             ) as response:
                 async for chunk in response.iter_bytes():
                     await websocket.send_bytes(chunk)
     except Exception as e:
